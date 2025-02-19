@@ -1,5 +1,6 @@
 package h12.io;
 
+import h12.lang.MyBit;
 import h12.lang.MyByte;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -56,7 +57,18 @@ public class BufferedBitInputStream extends BitInputStream {
     @StudentImplementationRequired("H12.1.1")
     protected void fetch() throws IOException {
         // TODO H12.1.1
-        org.tudalgo.algoutils.student.Student.crash("H12.1.1 - Remove if implemented");
+
+        int nextByte = underlying.read();
+        if (nextByte != -1) {
+            for (int i = 7; i >= 0; i--) {
+                int bit = (nextByte >> i) & 1;
+                buffer.set(position++, MyBit.fromInt(bit));
+            }
+            position = 0;
+        } else {
+            buffer = null;
+            position = INVALID;
+        }
     }
 
     @StudentImplementationRequired("H12.1.1")
