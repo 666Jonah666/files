@@ -50,21 +50,40 @@ public class BufferedBitOutputStream extends BitOutStream {
     @StudentImplementationRequired("H12.1.2")
     protected void flushBuffer() throws IOException {
         // TODO H12.1.2
-        org.tudalgo.algoutils.student.Student.crash("H12.1.2 - Remove if implemented");
+
+        if (position == MyByte.NUMBER_OF_BITS) {
+            underlying.write((byte) buffer.intValue());
+            buffer = new MyByte();
+            position = 0;
+        }
+
     }
 
     @StudentImplementationRequired("H12.1.2")
     @Override
     public void writeBit(MyBit bit) throws IOException {
         // TODO H12.1.2
-        org.tudalgo.algoutils.student.Student.crash("H12.1.2 - Remove if implemented");
+        if (position == MyByte.NUMBER_OF_BITS) {
+            buffer = new MyByte();
+            position = 0;
+        }
+
+        buffer.set(position++, bit);
     }
 
     @StudentImplementationRequired("H12.1.2")
     @Override
     public void write(int b) throws IOException {
         // TODO H12.1.2
-        org.tudalgo.algoutils.student.Student.crash("H12.1.2 - Remove if implemented");
+        if (b < 0 || b > 255) {
+            throw new IllegalArgumentException();
+        }
+
+        MyByte newBuffer = new MyByte(b);
+
+        for (int i = 7; i >= 0; i--) {
+            writeBit(newBuffer.get(i));
+        }
     }
 
     @DoNotTouch

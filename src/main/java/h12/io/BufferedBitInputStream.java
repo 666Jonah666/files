@@ -60,11 +60,12 @@ public class BufferedBitInputStream extends BitInputStream {
 
         int nextByte = underlying.read();
         if (nextByte != -1) {
-            for (int i = 7; i >= 0; i--) {
-                int bit = (nextByte >> i) & 1;
-                buffer.set(position++, MyBit.fromInt(bit));
-            }
             position = 0;
+
+            for (int i = 0; i < 8; i++) {
+                int bit = (nextByte >> (7 - i)) & 1;
+                buffer.set(i, MyBit.fromInt(bit));
+            }
         } else {
             buffer = null;
             position = INVALID;
@@ -75,14 +76,50 @@ public class BufferedBitInputStream extends BitInputStream {
     @Override
     public int readBit() throws IOException {
         // TODO H12.1.1
-        return org.tudalgo.algoutils.student.Student.crash("H12.1.1 - Remove if implemented");
+        if (buffer == null) {
+            fetch();
+        }
+
+        if (position == INVALID) {
+            return -1;
+        }
+
+        int bit = (buffer.get(position++)).intValue();
+
+        if (position >= 8) {
+            fetch();
+        }
+
+        return bit;
+
     }
 
     @StudentImplementationRequired("H12.1.1")
     @Override
     public int read() throws IOException {
-        // TODO H12.1.1
-        return org.tudalgo.algoutils.student.Student.crash("H12.1.1 - Remove if implemented");
+        // TODO H12.1.
+        MyBit [] bits = new MyBit[8];
+//        MyByte value = new MyByte(bits);
+
+        for (int i = 0; i < 8; i++) {
+            int bit = readBit();
+            if (i == 0 && bit == -1) {
+                return -1;
+            }
+            if (bit == -1) {
+                bits[i] = MyBit.ZERO;
+            } else {
+                bits[i] = MyBit.fromInt(bit);
+            }
+        }
+
+        int value = 0;
+
+        for (int i = 0; i < 8; i++) {
+            value += bits[7 - i].intValue() * Math.pow(2, i);
+        }
+
+        return value;
     }
 
     /**

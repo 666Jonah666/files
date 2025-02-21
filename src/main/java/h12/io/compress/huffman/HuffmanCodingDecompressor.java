@@ -56,7 +56,12 @@ public class HuffmanCodingDecompressor implements Decompressor {
     @StudentImplementationRequired("H12.4.2")
     protected void skipBits() throws IOException {
         // TODO H12.4.2
-        org.tudalgo.algoutils.student.Student.crash("H12.4.2 - Remove if implemented");
+        int skipsBits = in.readBit();
+
+        for (int i = 0; i < skipsBits; i++) {
+            in.readBit();
+        }
+
     }
 
     /**
@@ -104,7 +109,23 @@ public class HuffmanCodingDecompressor implements Decompressor {
     @StudentImplementationRequired("H12.4.2")
     char decodeCharacter(int startBit, EncodingTable encodingTable) throws IOException {
         // TODO H12.4.2
-        return org.tudalgo.algoutils.student.Student.crash("H12.4.2 - Remove if implemented");
+        String code = "";
+        int currentBitIndex = startBit;
+
+        while (true) {
+            int bit = in.readBit();
+
+            if (bit == 0) {
+                code += '0';
+            } else {
+                code += '1';
+            }
+            currentBitIndex++;
+
+            if (encodingTable.containsCode(code)) {
+                return encodingTable.getCharacter(code);
+            }
+        }
     }
 
     /**
@@ -117,7 +138,22 @@ public class HuffmanCodingDecompressor implements Decompressor {
     @StudentImplementationRequired("H12.4.2")
     void decodeText(EncodingTable encodingTable) throws IOException {
         // TODO H12.4.2
-        org.tudalgo.algoutils.student.Student.crash("H12.4.2 - Remove if implemented");
+        int startBit = 0;
+        String decodedText = "";
+
+        while (true) {
+            char decodedChar = decodeCharacter(startBit, encodingTable);
+            decodedText += decodedChar;
+
+            String charCode = encodingTable.getCode(decodedChar);
+            startBit += charCode.length();
+
+            if (startBit >= in.available()) {
+                break;
+            }
+        }
+
+        out.write(decodedText);
     }
 
     /**
@@ -129,7 +165,11 @@ public class HuffmanCodingDecompressor implements Decompressor {
     @Override
     public void decompress() throws IOException {
         // TODO H12.4.2
-        org.tudalgo.algoutils.student.Student.crash("H12.4.2 - Remove if implemented");
+        skipBits();
+        EncodingTable encodingTable = decodeHeader();
+        decodeText(encodingTable);
+
+        out.flush();
     }
 
     @DoNotTouch

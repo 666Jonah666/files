@@ -59,14 +59,29 @@ public class BitRunningLengthDecompressor implements Decompressor {
     @StudentImplementationRequired("H12.2.2")
     protected void writeBit(int count, MyBit bit) throws IOException {
         // TODO H12.2.2
-        org.tudalgo.algoutils.student.Student.crash("H12.2.2 - Remove if implemented");
+        for (int i = 0; i < count; i++) {
+            out.writeBit(bit);
+        }
     }
 
     @StudentImplementationRequired("H12.2.2")
     @Override
     public void decompress() throws IOException {
         // TODO H12.2.2
-        org.tudalgo.algoutils.student.Student.crash("H12.2.2 - Remove if implemented");
+        while (in.available() > 0) {
+            int read = in.readBit();
+
+            int count = 0;
+            for (int i = 0; i < 7; i++) {
+                int bit = in.readBit();
+                count |= (bit << (6 - i));
+            }
+
+            writeBit(count, MyBit.fromInt(read));
+
+        }
+
+        out.flush();
     }
 
     @DoNotTouch
